@@ -14,92 +14,73 @@ body {
 }
 
 .wrapper {
-  width: 600px;
-  margin: 60px auto;
-}
-
-.player {
-  width: 600px;
-  height: 337px;
-  position: absolute;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.player video, .player img {
-  position: absolute;
-  overflow: hidden;
-  border-radius: 20px;
-  -webkit-box-shadow: 0 0 10px #000;
-          box-shadow: 0 0 10px #000;
-}
-
-.player canvas {
-  position: absolute;
-  width: 600px;
-  height: 337px;
-  -webkit-transform: scale(1.2);
-          transform: scale(1.2);
-  -webkit-filter: blur(25px);
-          filter: blur(25px);
-  opacity: 0.75;
-  z-index: -1;
-}
-
-#top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 9;
-  border: 5px solid;
-}
-
-#right {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  z-index: 9;
-  border: 5px solid;
-}
-
-#bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  z-index: 9;
-  border: 5px solid;
-}
-
-#left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  z-index: 9;
-  border: 5px solid;
-}
-
-#ul {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100vw;
+  height: 100vh;
 }
 
-#ul > li {
-  border: 1px solid #fff;
+.wrapper .player {
+  width: 75vw;
+  height: 75vh;
+  position: relative;
 }
 
-li {
-  list-style: none;
+.wrapper .player video {
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  border-radius: .5em;
+  border: .5em solid #000;
+  -webkit-box-shadow: 0 0 1em #000;
+          box-shadow: 0 0 1em #000;
+}
+
+.wrapper .player canvas {
+  position: absolute;
+  width: 100%;
+  -webkit-transform: scale(1.1);
+          transform: scale(1.1);
+  -webkit-filter: blur(1em);
+          filter: blur(1em);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.border {
+  position: fixed;
+  z-index: 1;
+  border: 5px solid;
+}
+
+#top {
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+#right {
+  top: 0;
+  right: 0;
+  height: 100%;
+}
+
+#bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+#left {
+  top: 0;
+  left: 0;
+  height: 100%;
 }
 /*# sourceMappingURL=style.css.map */

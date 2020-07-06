@@ -1,7 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 const video = document.getElementById("video");
-const img = document.getElementById("img");
 const _top = document.getElementById("top");
 const _right = document.getElementById("right");
 const _bottom = document.getElementById("bottom");
@@ -54,7 +53,8 @@ function borderColor(arr, direction) {
     let pv = p;
     const res = [];
     for (let i = 0; i < arr.length; i++) {
-        const { r, g, b, a } = arr[i];
+        const { r, g, b } = arr[i];
+        const a = .5;
         res.push(`rgba(${r},${g},${b},${a}) ${pv}%`);
         if (res.length % 2 === 0) {
             pv += p;
@@ -76,12 +76,10 @@ function load(arr, total) {
     return result;
 }
 function draw() {
-    // const { videoWidth: w, videoHeight: h } = video;
-    const { width: w, height: h } = img;
+    const { videoWidth: w, videoHeight: h } = video;
     canvas.width = w;
     canvas.height = h;
-    // ctx.drawImage(video, 0, 0);
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(video, 0, 0);
     const frame = ctx.getImageData(0, 0, w, h);
     const { data } = frame;
 
@@ -128,8 +126,15 @@ function draw() {
 }
 
 function handleSuccess(stream) {
-    stream?.getVideoTracks();
-    video.srcObject = stream;
+    if (stream) {
+        stream?.getVideoTracks();
+        video.srcObject = stream;
+    }
+    else {
+        video.setAttribute("controls", "");
+        video.setAttribute("loop", "");
+        video.play();
+    }
 
     setTimeout(draw, 250);
 }

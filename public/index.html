@@ -9,18 +9,18 @@
 </head>
 
 <body>
-    <div id="top"></div>
-    <div id="right"></div>
-    <div id="bottom"></div>
-    <div id="left"></div>
+    <div id="top" class="border"></div>
+    <div id="right" class="border"></div>
+    <div id="bottom" class="border"></div>
+    <div id="left" class="border"></div>
     <div class="wrapper">
         <div class="player">
-            <video id="video" autoplay playsinline></video>
-            <img id="img" src="img03.png" />
+            <video id="video" autoplay playsinline>
+                <source src="test.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
             <canvas id="myCanvas"></canvas>
         </div>
-        <ul id="ul">
-        </ul>
     </div>
     <script src="index.js"></script>
 </body>
