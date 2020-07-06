@@ -2,8 +2,10 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 const video = document.getElementById("video");
 const img = document.getElementById("img");
-const ul = document.getElementById("ul");
 const _top = document.getElementById("top");
+const _right = document.getElementById("right");
+const _bottom = document.getElementById("bottom");
+const _left = document.getElementById("left");
 const constraints = (window.constraints = {
     audio: false,
     video: true
@@ -21,22 +23,57 @@ window.onload = async () => {
 };
 
 function rgba(data, x, y, w) {
-    const i = w * 4 * y + x;
-    // console.log({ i, x, y, w });
+    const i = ((w * 4) * y) + (x * 4);
+
     return {
-        r: data[i * 4],
-        g: data[i * 4 + 1],
-        b: data[i * 4 + 2],
-        a: data[i * 4 + 3]
+        r: data[i],
+        g: data[i + 1],
+        b: data[i + 2],
+        a: data[i + 3]
     };
 }
-function rgbaAVG({ r, g, b, a, count }) {
+function rgbaAVG(arr) {
+    const { r, g, b, a } = arr.reduce((v, e) => {
+        return {
+            r: v.r + e.r
+            , g: v.g + e.g
+            , b: v.b + e.b
+            , a: v.a + e.a
+        }
+    }, { r: 0, g: 0, b: 0, a: 0 });
+
     return {
-        r: Math.round(r / count)
-        , g: Math.round(g / count)
-        , b: Math.round(b / count)
-        , a: Math.round(a / count)
+        r: Math.round(r / arr.length)
+        , g: Math.round(g / arr.length)
+        , b: Math.round(b / arr.length)
+        , a: Math.round(a / arr.length)
     }
+}
+function borderColor(arr, direction) {
+    const p = (100 / arr.length);
+    let pv = p;
+    const res = [];
+    for (let i = 0; i < arr.length; i++) {
+        const { r, g, b, a } = arr[i];
+        res.push(`rgba(${r},${g},${b},${a}) ${pv}%`);
+        if (res.length % 2 === 0) {
+            pv += p;
+            res.push(`rgba(${r},${g},${b},${a}) ${pv}%`);
+        }
+    }
+    res.pop(); //remove last
+    return `linear-gradient(to ${direction || 'right'}, ${res.join(',')}) ${arr.length}`;
+}
+function load(arr, total) {
+    const m = (arr.length / total);
+    const result = [];
+    let v = 0;
+    while (v < arr.length) {
+        const rgba = rgbaAVG(arr.slice(v, v + m));
+        result.push(rgba);
+        v += m;
+    }
+    return result;
 }
 function draw() {
     // const { videoWidth: w, videoHeight: h } = video;
@@ -48,8 +85,8 @@ function draw() {
     const frame = ctx.getImageData(0, 0, w, h);
     const { data } = frame;
 
-    console.log(`pixels: ${data.length}`);
-    console.log(`size: ${w}x${h}`);
+    // console.log(`pixels: ${data.length}`);
+    // console.log(`size: ${w}x${h}`);
     const border = {
         top: new Array(w)
         , right: new Array(h)
@@ -61,103 +98,37 @@ function draw() {
         leftX = 0,
         rightX = w - 1,
         bottomY = h - 1;
+
     for (let i = 0; i < w; i++) {
         border.top[i] = rgba(data, i, topY, w);
-        border.bottom[i] = rgba(data, w - i, bottomY, w);
+        border.bottom[i] = rgba(data, i, bottomY, w);
 
         streap[i] = rgba(data, i, topY, w);
         streap[w + h + i] = rgba(data, w - i, bottomY, w);
     }
     for (let i = 0; i < h; i++) {
-        border.right[i] = rgba(data, leftX, i, w);
-        border.left[i] = rgba(data, rightX, i, w);
+        border.left[i] = rgba(data, leftX, i, w);
+        border.right[i] = rgba(data, rightX, i, w);
 
         streap[w + i] = rgba(data, leftX, i, w);
         streap[w + h + w + i] = rgba(data, rightX, i, w);
     }
+    // console.log(border)
 
-    for (let x = 0; x < w; x++) {
-        for (let y = 0; y < h; y++) {
-            const { r, g, b, a } = rgba(data, x, y, w);
+    const ww = 15;
+    const hh = 5;
 
-            const i = w * 4 * y + x * 4;
-            frame.data[i * 4] = r;
-            frame.data[i * 4 + 1] = g;
-            frame.data[i * 4 + 2] = b;
-            frame.data[i * 4 + 3] = a;
-        }
-    }
-    const total = 10;
-    const m = (streap.length / total);
-    const result = [];
-    let val = { r: 0, g: 0, b: 0, a: 0, count: 0 };
-    for (let i = 0; i < streap.length; i++) {
-        const { r, g, b, a } = streap[i];
-        val.r += r;
-        val.g += g;
-        val.b += b;
-        val.a += a;
-        val.count++;
-        if (val.count > m) {
-            console.log(val)
-            const rgba = rgbaAVG(val);
-            result.push(rgba);
-            val = { r: 0, g: 0, b: 0, a: 0, count: 0 }; //reset
-        }
-    }
-    console.log(result)
-
-    const v = Math.round(w / total);
-    const p = (100 / total);
-    let pv = p;
-    const
-        csTop = []
-        , csRight = []
-        , csBottom = []
-        , csLeft = []
-        ;
-    ul.style.width = w;
-    ul.innerHTML = '';
-    for (let i = 0; i < w; i += v) {
-        let li = document.createElement('li');
-        ul.appendChild(li);
-        li.style.width = `${p}%`;
-        let u = document.createElement('ul');
-        li.appendChild(u);
-
-        let val = { r: 0, g: 0, b: 0, a: 0, count: 0 };
-        for (let x = 0; x < v; x++) {
-            const { r, g, b, a } = streap[i + x];
-            val.r += r;
-            val.g += g;
-            val.b += b;
-            val.a += a;
-            val.count++;
-
-            let li = document.createElement('li');
-            u.appendChild(li);
-            li.style.color = `rgba(${r},${g},${b},${a})`;
-            li.innerText = i + x;
-        }
-        const { r, g, b, a } = rgbaAVG(val);
-
-        li.style.background = `rgba(${r},${g},${b},.3)`;
-
-        csTop.push(`rgba(${r},${g},${b},${a}) ${pv}%`);
-        if (csTop.length % 2 === 0) {
-            pv += p;
-            csTop.push(`rgba(${r},${g},${b},${a}) ${pv}%`);
-        }
-    }
-    csTop.pop(); //remove last
-    _top.style.borderImage = `linear-gradient(to right, ${csTop.join(',')}) ${total}`;
+    _top.style.borderImage = borderColor(load(border.top, ww));
+    _right.style.borderImage = borderColor(load(border.right, hh), 'bottom');
+    _bottom.style.borderImage = borderColor(load(border.bottom, ww));
+    _left.style.borderImage = borderColor(load(border.left, hh), 'bottom');
 
     ctx.putImageData(frame, 0, 0);
-    // setTimeout(draw, 80);
+    setTimeout(draw, 80);
 }
 
 function handleSuccess(stream) {
-    const videoTracks = stream?.getVideoTracks();
+    stream?.getVideoTracks();
     video.srcObject = stream;
 
     setTimeout(draw, 250);

@@ -29,17 +29,12 @@ body {
   bottom: 0;
 }
 
-.player video {
-  width: 600px;
-  height: 337px;
-  z-index: 1;
+.player video, .player img {
   position: absolute;
   overflow: hidden;
   border-radius: 20px;
   -webkit-box-shadow: 0 0 10px #000;
           box-shadow: 0 0 10px #000;
-  -webkit-transform: scaleX(-1);
-          transform: scaleX(-1);
 }
 
 .player canvas {

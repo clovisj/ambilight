@@ -28,16 +28,16 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  video {
-    width: 600px;
-    height: 337px;
-    z-index: 1;
+  video,img {
+    // width: 600px;
+    // height: 337px;
+    // z-index: 1;
     position: absolute;
     overflow: hidden;
     border-radius: 20px;
     // border: 10px solid #000;
     box-shadow: 0 0 10px #000;
-    transform: scaleX(-1);
+    // transform: scaleX(-1);
   }
   canvas {
     position: absolute;
