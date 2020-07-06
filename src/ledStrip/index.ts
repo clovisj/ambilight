@@ -10,7 +10,8 @@ export {
     Color
 }
 
-const PIN_LED = 2; //ESP8266
+const LED_BUILTIN = 2; //ESP8266
+const OUTPUT = 1;
 
 export default class LedStripService {
     private readonly config: LedStrip;
@@ -41,10 +42,10 @@ export default class LedStripService {
             console.log('### BOARD READY');
 
             // the Led class was acting hinky, so just using Pin here
-            const pin = board.pinMode(PIN_LED, 1);
+            const pin = board.pinMode(LED_BUILTIN, OUTPUT);
             board.loop(250, () => {
                 // Whatever the last value was, write the opposite
-                board.digitalWrite(PIN_LED, board.pins[PIN_LED].value ? 0 : 1);
+                board.digitalWrite(LED_BUILTIN, board.pins[LED_BUILTIN].value ? 0 : 1);
             });
 
             this.strip = new pixel.Strip({
