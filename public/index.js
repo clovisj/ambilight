@@ -75,7 +75,7 @@ function load(arr, total) {
     }
     return result;
 }
-function draw() {
+async function draw() {
     const { videoWidth: w, videoHeight: h } = video;
     canvas.width = w;
     canvas.height = h;
@@ -113,16 +113,35 @@ function draw() {
     }
     // console.log(border)
 
-    const ww = 15;
+    const ww = 12;
     const hh = 5;
 
-    _top.style.borderImage = borderColor(load(border.top, ww));
-    _right.style.borderImage = borderColor(load(border.right, hh), 'bottom');
-    _bottom.style.borderImage = borderColor(load(border.bottom, ww));
-    _left.style.borderImage = borderColor(load(border.left, hh), 'bottom');
+    const top = load(border.top, ww);
+    const right = load(border.right, hh);
+    const bottom = load(border.bottom, ww);
+    const left = load(border.left, hh);
+    _top.style.borderImage = borderColor(top);
+    _right.style.borderImage = borderColor(right, 'bottom');
+    _bottom.style.borderImage = borderColor(bottom);
+    _left.style.borderImage = borderColor(left, 'bottom');
 
     ctx.putImageData(frame, 0, 0);
-    setTimeout(draw, 80);
+    const cTop = top.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    const cRight = right.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    const cBottom = bottom.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    const cLeft = left.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    await fetch(`http://localhost:3000/`, {
+        method: 'POST'
+        , headers: new Headers({
+            'Content-Type':'application/json'
+        })
+        , body: JSON.stringify({
+            top, right, bottom, left
+        })
+    })
+
+    // setTimeout(draw, 120);
+    draw();
 }
 
 function handleSuccess(stream) {

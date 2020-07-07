@@ -105,7 +105,6 @@ void loop()
     {
         int i = req.indexOf("/?leds=") + 7;
         String res = req.substring(i);
-        Serial.println(res);
         setCustom(res);
         val = 1;
     }
