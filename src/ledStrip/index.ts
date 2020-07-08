@@ -29,35 +29,43 @@ export default class LedStripService {
         this.hist = new Array(length);
         this.current = Object.assign(this.config, {}); //clone
 
-        const board = new Board({
-            port: new EtherPortClient({
-                host: '192.168.100.138',
-                port: 3030
-            })
+        const net = new EtherPortClient({
+            host: '192.168.100.138',
+            port: 3030
+        });
+
+        const board = new Board(
+            {
+            port: net
             // port
             , repl: false
-        });
+        }
+        );
 
         board.on("ready", () => {
             console.log('### BOARD READY');
 
             // the Led class was acting hinky, so just using Pin here
-            const pin = board.pinMode(LED_BUILTIN, OUTPUT);
-            board.loop(250, () => {
-                // Whatever the last value was, write the opposite
-                board.digitalWrite(LED_BUILTIN, board.pins[LED_BUILTIN].value ? 0 : 1);
-            });
+            // const pin = board.pinMode(LED_BUILTIN, OUTPUT);
+            // board.loop(250, () => {
+            //     // Whatever the last value was, write the opposite
+            //     board.digitalWrite(LED_BUILTIN, board.pins[LED_BUILTIN].value ? 0 : 1);
+            // });
 
             this.strip = new pixel.Strip({
                 board
                 // , controller: 'FIRMATA' //connect by jonny-five
                 , controller: "I2CBACKPACK" //connect by wifi
-                , strips: [{ pin, length }] // this is preferred form for definition
+                // , strips: [{ pin, length }] // this is preferred form for definition
+                , strips: [length] // this is preferred form for definition
                 , gamma: 2.8 // set to a gamma that works nicely for WS2812
             });
             this.strip.on("ready", () => {
                 this.isReady = true;
                 console.log('### STRIP READY');
+                this.colorAll(new Color(255,0,0))
+                var p = this.strip.pixel(1);
+                console.log(p.color());
             });
         });
     }

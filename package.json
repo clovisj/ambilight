@@ -21,7 +21,7 @@
   "homepage": "https://github.com/juca-dev/ambilight#readme",
   "dependencies": {
     "etherport-client": "^0.1.4",
-    "firmata": "^0.19.1",
+    "firmata": "^2.2.0",
     "johnny-five": "^2.0.0",
     "jpeg-js": "^0.4.1",
     "node-pixel": "^0.10.2",

@@ -7,14 +7,24 @@ const _bottom = document.getElementById("bottom");
 const _left = document.getElementById("left");
 const constraints = (window.constraints = {
     audio: false,
-    video: true
+    video: true,
+    // video: {
+    //     deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
+    // }
 });
+const FPS = 1000 / 80;
 
 window.onload = async () => {
     video.setAttribute("playsinline", ""); //fix ios cam
     try {
-        // const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const stream = null;
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        console.log(devices)
+        devices.forEach(function (device) {
+            console.log(device.kind + ": " + device.label + " id = " + device.deviceId);
+        });
+
+        let stream = await navigator.mediaDevices.getUserMedia(constraints);
+        // stream = null;
         handleSuccess(stream);
     } catch (err) {
         alert(err.message);
@@ -126,27 +136,29 @@ async function draw() {
     _left.style.borderImage = borderColor(left, 'bottom');
 
     ctx.putImageData(frame, 0, 0);
-    const cTop = top.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    const cRight = right.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    const cBottom = bottom.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    const cLeft = left.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    await fetch(`http://localhost:3000/`, {
-        method: 'POST'
-        , headers: new Headers({
-            'Content-Type':'application/json'
-        })
-        , body: JSON.stringify({
-            top, right, bottom, left
-        })
-    })
+    // const cTop = top.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    // const cRight = right.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    // const cBottom = bottom.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    // const cLeft = left.map(e => `${e.r},${e.g},${e.b}`).join(',');
+    // await fetch(`http://localhost:3000/`, {
+    //     method: 'POST'
+    //     , headers: new Headers({
+    //         'Content-Type': 'application/json'
+    //     })
+    //     , body: JSON.stringify([
+    //         ...top
+    //         , ...right
+    //         , ...bottom
+    //         , ...left
+    //     ])
+    // })
 
-    // setTimeout(draw, 120);
-    draw();
+    setTimeout(draw, FPS);
 }
 
 function handleSuccess(stream) {
     if (stream) {
-        stream?.getVideoTracks();
+        stream.getVideoTracks();
         video.srcObject = stream;
     }
     else {
