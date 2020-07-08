@@ -1,58 +1,31 @@
-import { readFileSync } from 'fs';
-// @ts-ignore
-import NodeWebcam = require('node-webcam');
+import * as cv from 'opencv4nodejs';
 import { decode } from 'jpeg-js';
 
 class Webcam {
-    private readonly device: any;
+    private readonly device: cv.VideoCapture;
+    private readonly fps: number;
 
     constructor() {
-        this.device = NodeWebcam.create({
-            //Picture related
-            width: 1280,
-            height: 720,
-            quality: 100,
-            // Number of frames to capture
-            // More the frames, longer it takes to capture
-            // Use higher framerate for quality. Ex: 60
-            frames: 60,
-            //Delay in seconds to take shot
-            //if the platform supports miliseconds
-            //use a float (0.1)
-            //Currently only on windows
-            delay: 0,
-            //Save shots in memory
-            saveShots: true,
-            // [jpeg, png] support varies
-            // Webcam.OutputTypes
-            output: "jpeg",
-            //Which camera to use
-            //Use Webcam.list() for results
-            //false for default device
-            device: false,
-            // [location, buffer, base64]
-            // Webcam.CallbackReturnTypes
-            callbackReturn: "location",
-            //Logging
-            verbose: false
-        });
+        this.device = new cv.VideoCapture(0);
+        this.device.set(cv.CAP_PROP_BUFFERSIZE, 1);
+        this.device.set(cv.CAP_PROP_FPS, 2);
+        this.device.set(cv.CAP_PROP_POS_FRAMES, 1);
+        this.device.set(cv.CAP_PROP_FRAME_WIDTH, 640);
+        this.device.set(cv.CAP_PROP_FRAME_HEIGHT, 360);
+        this.fps = 1000 / 80;
     }
 
     async capture() {
-        const res = new Promise((resolve: any, reject: any) => {
-            this.device.capture(
-                "test_picture"
-                , (err: any, file: string) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    const buffer = readFileSync(file);
-                    const data = decode(buffer);
-                    return resolve(data);
-                });
-        });
 
-        return res;
+        const frame = this.device.read();
+        
+        // Very slow
+        // const data = frame.getDataAsArray();
+        // console.log(`${data[0].length}x${data.length}`);
+
+        const buffer = cv.imencode('.jpg', frame);
+        const res = decode(buffer);
+        console.log(`${res.width}x${res.height} ${res.data.length}`);
     }
 }
 
