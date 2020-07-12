@@ -13,21 +13,28 @@ const constraints = (window.constraints = {
     // }
 });
 const FPS = 1000 / 60;
+const HOST = 'ws://192.168.100.138/';
 
-const ws = new WebSocket('ws://192.168.100.138/');
+let ws = new WebSocket(HOST);
 
 let WS_CONNECTED = false;
+let RETRY = undefined;
 
 
 ws.onclose = console.error;
 ws.onmessage = console.log;
 ws.onopen = () => {
     WS_CONNECTED = true;
-    console.log('CONNECTED!')
+    clearInterval(RETRY);
+    console.log('CONNECTED!');
 };
 ws.onclose = () => {
     WS_CONNECTED = false;
-    console.log('DISCONNECTED!')
+    console.log('DISCONNECTED!');
+
+    // RETRY = setInterval(() => {
+    //     console.log('RETRY!');
+    // }, 5000)
 };
 
 window.onload = async () => {
@@ -38,7 +45,7 @@ window.onload = async () => {
         console.log(devices) // { kind, label, deviceId }
 
         let stream = await navigator.mediaDevices.getUserMedia(constraints);
-        stream = null;
+        // stream = null;
         handleSuccess(stream);
     } catch (err) {
         alert(err.message);
@@ -162,8 +169,8 @@ async function draw() {
     ]
 
     let pixels = new Uint8Array(vars.length * 3);
-    console.log(pixels.length);
-    
+    // console.log(pixels.length);
+
     vars
         .forEach((e, i) => {
             const p = i * 3;
