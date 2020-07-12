@@ -12,19 +12,33 @@ const constraints = (window.constraints = {
     //     deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
     // }
 });
-const FPS = 1000 / 80;
+const FPS = 500//1000 / 60;
+
+const ws = new WebSocket('ws://192.168.100.138/');
+
+let WS_CONNECTED = false;
+
+
+ws.onclose = console.error;
+ws.onmessage = console.log;
+ws.onopen = () => {
+    WS_CONNECTED = true;
+    console.log('CONNECTED!')
+};
+ws.onclose = () => {
+    WS_CONNECTED = false;
+    console.log('DISCONNECTED!')
+};
 
 window.onload = async () => {
     video.setAttribute("playsinline", ""); //fix ios cam
     try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        console.log(devices)
-        devices.forEach(function (device) {
-            console.log(device.kind + ": " + device.label + " id = " + device.deviceId);
-        });
+        const devices = (await navigator.mediaDevices.enumerateDevices())
+            .filter(e => e.deviceId && e.kind === 'videoinput');
+        console.log(devices) // { kind, label, deviceId }
 
         let stream = await navigator.mediaDevices.getUserMedia(constraints);
-        // stream = null;
+        stream = null;
         handleSuccess(stream);
     } catch (err) {
         alert(err.message);
@@ -123,8 +137,8 @@ async function draw() {
     }
     // console.log(border)
 
-    const ww = 12;
-    const hh = 5;
+    const ww = 19;
+    const hh = 32;
 
     const top = load(border.top, ww);
     const right = load(border.right, hh);
@@ -136,22 +150,29 @@ async function draw() {
     _left.style.borderImage = borderColor(left, 'bottom');
 
     ctx.putImageData(frame, 0, 0);
-    // const cTop = top.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    // const cRight = right.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    // const cBottom = bottom.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    // const cLeft = left.map(e => `${e.r},${e.g},${e.b}`).join(',');
-    // await fetch(`http://localhost:3000/`, {
-    //     method: 'POST'
-    //     , headers: new Headers({
-    //         'Content-Type': 'application/json'
-    //     })
-    //     , body: JSON.stringify([
-    //         ...top
-    //         , ...right
-    //         , ...bottom
-    //         , ...left
-    //     ])
-    // })
+    while (!WS_CONNECTED) {
+        await new Promise(res => setTimeout(res, 500));
+    }
+
+    const vars = [
+        ...top
+        , ...right
+        , ...bottom.reverse()
+        , ...left.reverse()
+    ]
+
+    let pixels = new Uint8Array(vars.length * 3);
+    console.log(pixels.length);
+    
+    vars
+        .forEach((e, i) => {
+            const p = i * 3;
+            pixels[p] = e.r;
+            pixels[p + 1] = e.g;
+            pixels[p + 2] = e.b;
+        });
+
+    ws.send(pixels.buffer);
 
     setTimeout(draw, FPS);
 }

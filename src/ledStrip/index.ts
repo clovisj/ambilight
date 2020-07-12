@@ -31,7 +31,7 @@ export default class LedStripService {
 
         const net = new EtherPortClient({
             host: '192.168.100.138',
-            port: 3030
+            port: 80
         });
 
         const board = new Board(
