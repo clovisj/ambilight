@@ -4,11 +4,11 @@
 
 #define WIFI_SSID "Apto 32"
 #define WIFI_PWD "10205300"
-#define LED_W 19
-#define LED_H 32
+#define LED_W 37
+#define LED_H 22
 #define LED_COUNT ((LED_W * 2) + (LED_H * 2)) //STRIP LED (W x H)
 #define PIN 0                                 //ESP8266
-#define BRIGHTNESS 60                         //0-99
+#define BRIGHTNESS 99                         //0-99
 
 //https://www.youtube.com/watch?v=i0hqUdyi-dQ
 // Parameter 1 = number of pixels in strip

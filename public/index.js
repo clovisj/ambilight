@@ -8,11 +8,11 @@ const _left = document.getElementById("left");
 const constraints = (window.constraints = {
     audio: false,
     video: true,
-    // video: {
-    //     deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
-    // }
+    video: {
+        deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
+    }
 });
-const FPS = 1000 / 60;
+const FPS = 1000 / 50;
 const HOST = 'ws://192.168.100.138/';
 
 let ws = new WebSocket(HOST);
@@ -45,7 +45,7 @@ window.onload = async () => {
         console.log(devices) // { kind, label, deviceId }
 
         let stream = await navigator.mediaDevices.getUserMedia(constraints);
-        // stream = null;
+        stream = null;
         handleSuccess(stream);
     } catch (err) {
         alert(err.message);
@@ -144,17 +144,17 @@ async function draw() {
     }
     // console.log(border)
 
-    const ww = 19;
-    const hh = 32;
+    const ww = 37;
+    const hh = 22;
 
     const top = load(border.top, ww);
     const right = load(border.right, hh);
     const bottom = load(border.bottom, ww);
     const left = load(border.left, hh);
-    _top.style.borderImage = borderColor(top);
-    _right.style.borderImage = borderColor(right, 'bottom');
-    _bottom.style.borderImage = borderColor(bottom);
-    _left.style.borderImage = borderColor(left, 'bottom');
+    // _top.style.borderImage = borderColor(top);
+    // _right.style.borderImage = borderColor(right, 'bottom');
+    // _bottom.style.borderImage = borderColor(bottom);
+    // _left.style.borderImage = borderColor(left, 'bottom');
 
     ctx.putImageData(frame, 0, 0);
     while (!WS_CONNECTED) {
@@ -162,10 +162,10 @@ async function draw() {
     }
 
     const vars = [
-        ...top
+        , ...left.reverse()
+        , ...top
         , ...right
         , ...bottom.reverse()
-        , ...left.reverse()
     ]
 
     let pixels = new Uint8Array(vars.length * 3);
