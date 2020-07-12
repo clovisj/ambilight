@@ -12,7 +12,7 @@ const constraints = (window.constraints = {
     //     deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
     // }
 });
-const FPS = 500//1000 / 60;
+const FPS = 1000 / 60;
 
 const ws = new WebSocket('ws://192.168.100.138/');
 
