@@ -13,7 +13,7 @@ const constraints = (window.constraints = {
     }
 });
 const FPS = 1000 / 50;
-const HOST = 'ws://192.168.100.138/';
+const HOST = 'ws://192.168.100.27/';
 
 let ws = new WebSocket(HOST);
 
@@ -22,11 +22,12 @@ let RETRY = undefined;
 
 
 ws.onclose = console.error;
-ws.onmessage = console.log;
+ws.onmessage = e => console.log(JSON.parse(e.data));
 ws.onopen = () => {
     WS_CONNECTED = true;
     clearInterval(RETRY);
     console.log('CONNECTED!');
+    ws.send(`#00255118`)
 };
 ws.onclose = () => {
     WS_CONNECTED = false;
@@ -114,8 +115,6 @@ async function draw() {
     const frame = ctx.getImageData(0, 0, w, h);
     const { data } = frame;
 
-    // console.log(`pixels: ${data.length}`);
-    // console.log(`size: ${w}x${h}`);
     const border = {
         top: new Array(w)
         , right: new Array(h)
@@ -169,7 +168,6 @@ async function draw() {
     ]
 
     let pixels = new Uint8Array(vars.length * 3);
-    // console.log(pixels.length);
 
     vars
         .forEach((e, i) => {
