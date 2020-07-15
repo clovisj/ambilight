@@ -12,7 +12,7 @@ class Webcam {
         this.device.set(cv.CAP_PROP_POS_FRAMES, 1);
         this.device.set(cv.CAP_PROP_FRAME_WIDTH, 640);
         this.device.set(cv.CAP_PROP_FRAME_HEIGHT, 360);
-        this.fps = 1000 / 80;
+        this.fps = 1000 / 60;
     }
 
     async capture() {

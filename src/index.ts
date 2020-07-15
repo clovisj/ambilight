@@ -1,19 +1,27 @@
-// import Webcam from './webcam';
+import Webcam from './webcam';
 import LedStripService, { Color } from './ledStrip';
-import { exit } from 'process';
+import ScreeenService from './screen';
 
 class App {
     static async run() {
+        let res: any;
+        let count = 0;
+
         try {
+
             // const a = new LedStripService(0, 32, '/dev/cu.SLAB_USBtoUART');
-            const a = new LedStripService(0, 32, '/dev/tty.SLAB_USBtoUART');
-            await a.on();
-            await a.colorAll(new Color(255, 50, 0));
+            // const a = new LedStripService(0, 32, '/dev/tty.SLAB_USBtoUART');
+            // await a.on();
+            // await a.colorAll(new Color(255, 50, 0));
             // let data = undefined;
-            // let i = 20;
-            // while (i-- > 0) {
-            //     await Webcam.capture();
-            // }
+            await new Promise(res => setTimeout(res, 5000));
+            let i = 20;
+            while (i-- > 0) {
+                res = await Webcam.capture();
+                // res = await ScreeenService.borderArray();
+                // res = await ScreeenService.borderArray2();
+                console.log(count++);
+            }
         }
         catch (err) {
             throw err;
@@ -24,6 +32,6 @@ class App {
 App.run()
     .then(e => {
         console.log(e);
-        exit(1);
+        process.exit(1);
     })
     .catch(console.error);

@@ -6,13 +6,21 @@ const _right = document.getElementById("right");
 const _bottom = document.getElementById("bottom");
 const _left = document.getElementById("left");
 const constraints = (window.constraints = {
-    audio: false,
-    video: true,
-    video: {
+    audio: false
+    , video: true
+    , video: {
         deviceId: 'fee9df40443c4748ac6da1e0467d2899342dd82f68d8ffc739c4fd471b9b0abf'
     }
+    , video: {
+        cursor: 'never'
+    }
+    // , audio: {
+    //     echoCancellation: true,
+    //     noiseSuppression: true,
+    //     sampleRate: 44100
+    // }
 });
-const FPS = 1000 / 50;
+const FPS = 1000 / 60;
 const HOST = 'ws://192.168.100.138/';
 
 let ws = new WebSocket(HOST);
@@ -44,9 +52,11 @@ window.onload = async () => {
             .filter(e => e.deviceId && e.kind === 'videoinput');
         console.log(devices) // { kind, label, deviceId }
 
-        let stream = await navigator.mediaDevices.getUserMedia(constraints);
-        stream = null;
-        handleSuccess(stream);
+        let stream;
+        // stream = await navigator.mediaDevices.getUserMedia(constraints);
+        stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+        
+        startCapture(stream);
     } catch (err) {
         alert(err.message);
     }
@@ -184,9 +194,8 @@ async function draw() {
     setTimeout(draw, FPS);
 }
 
-function handleSuccess(stream) {
+function startCapture(stream) {
     if (stream) {
-        stream.getVideoTracks();
         video.srcObject = stream;
     }
     else {
@@ -196,4 +205,10 @@ function handleSuccess(stream) {
     }
 
     setTimeout(draw, 250);
+}
+function stopCapture() {
+    const tracks = video.srcObject.getTracks();
+
+    tracks.forEach(track => track.stop());
+    video.srcObject = null;
 }
