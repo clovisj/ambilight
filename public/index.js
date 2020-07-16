@@ -28,7 +28,6 @@ let ws = new WebSocket(HOST);
 let WS_CONNECTED = false;
 let RETRY = undefined;
 
-
 ws.onclose = console.error;
 ws.onmessage = console.log;
 ws.onopen = () => {
@@ -54,8 +53,8 @@ window.onload = async () => {
 
         let stream;
         // stream = await navigator.mediaDevices.getUserMedia(constraints);
-        stream = await navigator.mediaDevices.getDisplayMedia(constraints);
-        
+        // stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+
         startCapture(stream);
     } catch (err) {
         alert(err.message);
@@ -132,11 +131,16 @@ async function draw() {
         , bottom: new Array(w)
         , left: new Array(h)
     }
-    const streap = [2 * w + 2 * h],
-        topY = 0,
-        leftX = 0,
-        rightX = w - 1,
-        bottomY = h - 1;
+    const streap = [2 * w + 2 * h]
+        , borderX = 0 //border margin in px
+        , borderY = 0 //border margin in px, ex: youtube fullscreen = 50
+        , topY = borderY
+        , leftX = borderX
+        , rightX = w - (1 + borderX)
+        , bottomY = h - (1 + borderY);
+
+    // topY = 200,
+    // bottomY = h - 201;
 
     for (let i = 0; i < w; i++) {
         border.top[i] = rgba(data, i, topY, w);

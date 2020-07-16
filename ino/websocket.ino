@@ -8,7 +8,7 @@
 #define LED_H 22
 #define LED_COUNT ((LED_W * 2) + (LED_H * 2)) //STRIP LED (W x H)
 #define PIN 0                                 //ESP8266
-#define BRIGHTNESS 99                         //0-99
+#define BRIGHTNESS 175                        //0-99
 
 //https://www.youtube.com/watch?v=i0hqUdyi-dQ
 // Parameter 1 = number of pixels in strip
@@ -31,12 +31,16 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t len)
   switch (type)
   {
   case WStype_DISCONNECTED:
+  {
     digitalWrite(LED_BUILTIN, 1); //OFF
+    colorAll(0, 0, 0);
     Serial.printf("[%u] Disconnected!\n", num);
-    break;
+  }
+  break;
   case WStype_CONNECTED:
   {
     digitalWrite(LED_BUILTIN, 0); // ON
+    colorAll(0, 255, 0);
     IPAddress ip = webSocket.remoteIP(num);
     Serial.printf("[%u] Connected!\n", num);
     Serial.println(ip);
@@ -77,10 +81,11 @@ void setup()
   Serial.begin(115200);
 
   pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 1); // OFF
 
   strip.setBrightness(BRIGHTNESS);
   strip.begin();
+
+  digitalWrite(LED_BUILTIN, 1); // OFF
   colorAll(0, 0, 0);
 
   Serial.println("Connecting");
@@ -101,8 +106,10 @@ void setup()
     }
     delay(250);
   }
+
   digitalWrite(LED_BUILTIN, 1); // OFF
-  colorAll(0, 255, 0);
+  colorAll(0, 0, 0);
+
   Serial.println("Connected!");
   Serial.println(WiFi.localIP());
 
